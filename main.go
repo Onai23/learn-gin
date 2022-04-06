@@ -17,9 +17,6 @@ type Article struct {
 	Desc  string `sql:"type:text"`
 }
 
-//set objek cetakan Article tipe struct slice
-var items []Article
-
 //deklarasi variable global tipe *gorm.DB
 var DB *gorm.DB
 
@@ -50,12 +47,6 @@ func main() {
 			articles.GET("/:slug", getArticle)
 			articles.POST("/", postArticle)
 		}
-		//membuat router khusus menangani users,
-		//users := v1.Group("/users")
-		//{
-		//	//set handler
-		//	users.GET("/", getUser)
-		//}
 	}
 
 	//menjalakan server
@@ -66,7 +57,7 @@ func main() {
 //gin.Context = membawa detail permintaan, memvalidasi dan membuat serialisasi data json
 func getHome(c *gin.Context) {
 	//mengambil data dengan mengakses model
-	items = []Article{}
+	items := []Article{}
 	//ambil data dari table articles, kemudian simpan ke dalam variable items
 	DB.Find(&items) /// SELECT * FROM articles
 	//gin.H = set response
@@ -108,11 +99,6 @@ func postArticle(c *gin.Context) {
 	//jika slug sama generate random slug
 	//cek database apakah ada slug yang sama
 	//jika ada, beri string random pada slug
-	//db.First(&user, "id = ?", "string_primary_key")
-	// SELECT * FROM users WHERE id = 'string_primary_key';
-	//if DB.First(&items, "title = ? ", item.Title).Create() {
-	//
-	//}
 
 	DB.Create(&item)
 	//set response json
