@@ -2,9 +2,19 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
 func main() {
+	//set koneksi database
+	db, err := gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/learngin?charset=utf8mb4&parseTime=True&loc=Local")
+	//cek jika ada error
+	if err != nil {
+		panic("failed to connect database")
+	}
+	defer db.Close()
+
 	//set default route
 	router := gin.Default()
 	//set group dari router ke /api/vi
@@ -18,6 +28,12 @@ func main() {
 			articles.GET("/:title", getArticle)
 			articles.POST("/", postArticle)
 		}
+		//membuat router khusus menangani users,
+		//users := v1.Group("/users")
+		//{
+		//	//set handler
+		//	users.GET("/", getUser)
+		//}
 	}
 
 	//menjalakan server
