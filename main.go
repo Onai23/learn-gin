@@ -7,12 +7,15 @@ import (
 func main() {
 	//set default route
 	router := gin.Default()
+	//set group dari router ke /api/vi
+	v1 := router.Group("/api/v1")
+	{
+		//set handler
+		v1.GET("/", getHome)
+		v1.GET("/article/:title", getArticle)
+		v1.POST("/articles", postArticle)
+	}
 
-	//set handler
-	//gin.Context = membawa detail permintaan, memvalidasi dan membuat serialisasi data json
-	router.GET("/", getHome)
-	router.GET("/article/:title", getArticle)
-	router.POST("/articles", postArticle)
 	//menjalakan server
 	router.Run("localhost:8080")
 }
@@ -39,6 +42,7 @@ func getArticle(c *gin.Context) {
 }
 
 //set fungsi postArticle()
+//gin.Context = membawa detail permintaan, memvalidasi dan membuat serialisasi data json
 func postArticle(c *gin.Context) {
 	//mengambil data yang dikirim dari form post, kirim dari url-form-encoded
 	title := c.PostForm("title")
