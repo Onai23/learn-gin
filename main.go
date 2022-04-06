@@ -6,6 +6,16 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
+//Model, dibentuk database orm, mewakili tabel2 yang ada di database
+//id unique akan otomatis dibuatkan
+//deklarasi cetakan Article
+type Article struct {
+	gorm.Model
+	Title string
+	Slug  string `gorm:"unique_index"`
+	Desc  string `sql:"type:text"`
+}
+
 func main() {
 	//set koneksi database
 	db, err := gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/learngin?charset=utf8mb4&parseTime=True&loc=Local")
@@ -14,6 +24,9 @@ func main() {
 		panic("failed to connect database")
 	}
 	defer db.Close()
+
+	//memigrasi cetakan Article sebagai tabel di database
+	db.AutoMigrate(&Article{})
 
 	//set default route
 	router := gin.Default()
