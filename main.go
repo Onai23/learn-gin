@@ -43,7 +43,7 @@ func main() {
 		{
 			//set handler
 			articles.GET("/", getHome)
-			articles.GET("/:title", getArticle)
+			articles.GET("/:slug", getArticle)
 			articles.POST("/", postArticle)
 		}
 		//membuat router khusus menangani users,
@@ -75,11 +75,19 @@ func getHome(c *gin.Context) {
 //set fungsi getArticle()
 func getArticle(c *gin.Context) {
 	//get parameter title
-	title := c.Param("title")
+	slug := c.Param("slug")
+	var item Article
+	//ambil data berdasarkan slug, kemudian simpan ke dalam cetakan item struct
+	if DB.First(&item, "slug = ?", slug).RecordNotFound() {
+		//set response
+		c.JSON(404, gin.H{"status": "error", "message": "record not found"})
+		c.Abort() //hentikan request
+		return
+	}
 	//set response dari parameter
 	c.JSON(200, gin.H{
 		"status":  "Berhasil",
-		"message": title,
+		"message": item,
 	})
 }
 
