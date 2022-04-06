@@ -113,9 +113,7 @@ func postArticle(c *gin.Context) {
 	//if DB.First(&items, "title = ? ", item.Title).Create() {
 	//
 	//}
-	if DB.Select("title").Find(&items) {
 
-	}
 	DB.Create(&item)
 	//set response json
 	c.JSON(200, gin.H{
