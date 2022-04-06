@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -15,6 +16,9 @@ type Article struct {
 	Slug  string `gorm:"unique_index"`
 	Desc  string `sql:"type:text"`
 }
+
+//set objek cetakan Article tipe struct slice
+var items []Article
 
 //deklarasi variable global tipe *gorm.DB
 var DB *gorm.DB
@@ -62,7 +66,7 @@ func main() {
 //gin.Context = membawa detail permintaan, memvalidasi dan membuat serialisasi data json
 func getHome(c *gin.Context) {
 	//mengambil data dengan mengakses model
-	items := []Article{}
+	items = []Article{}
 	//ambil data dari table articles, kemudian simpan ke dalam variable items
 	DB.Find(&items) /// SELECT * FROM articles
 	//gin.H = set response
@@ -95,13 +99,27 @@ func getArticle(c *gin.Context) {
 //gin.Context = membawa detail permintaan, memvalidasi dan membuat serialisasi data json
 func postArticle(c *gin.Context) {
 	//mengambil data yang dikirim dari form post, kirim dari url-form-encoded
-	title := c.PostForm("title")
-	desc := c.PostForm("desc")
+	//deklarasi cetakan article untuk menambahkan databaru ke database
+	item := Article{
+		Title: c.PostForm("title"),
+		Desc:  c.PostForm("desc"),
+		Slug:  slug.Make(c.PostForm("title")),
+	}
+	//jika slug sama generate random slug
+	//cek database apakah ada slug yang sama
+	//jika ada, beri string random pada slug
+	//db.First(&user, "id = ?", "string_primary_key")
+	// SELECT * FROM users WHERE id = 'string_primary_key';
+	//if DB.First(&items, "title = ? ", item.Title).Create() {
+	//
+	//}
+	if DB.Select("title").Find(&items) {
 
+	}
+	DB.Create(&item)
 	//set response json
 	c.JSON(200, gin.H{
-		"title":  title,
-		"desc":   desc,
 		"status": "Berhasil ngepost",
+		"data":   item,
 	})
 }
