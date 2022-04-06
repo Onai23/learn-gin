@@ -4,15 +4,20 @@ import "github.com/gin-gonic/gin"
 
 func main() {
 	//set default route
-	r := gin.Default()
+	router := gin.Default()
 
 	//set handler
 	//gin.Context = membawa detail permintaan, memvalidasi dan membuat serialisasi data json
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "berhasil akses home",
-		})
-	})
+	router.GET("/", getHome)
 	//menjalakan server
-	r.Run("localhost:8080")
+	router.Run("localhost:8080")
+}
+
+//set fungsi getHome() untuk route "/"
+//gin.Context = membawa detail permintaan, memvalidasi dan membuat serialisasi data json
+func getHome(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"status":  "Berhasil",
+		"message": "Berhasil akses home",
+	})
 }
