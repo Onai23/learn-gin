@@ -10,10 +10,14 @@ func main() {
 	//set group dari router ke /api/vi
 	v1 := router.Group("/api/v1")
 	{
-		//set handler
-		v1.GET("/", getHome)
-		v1.GET("/article/:title", getArticle)
-		v1.POST("/articles", postArticle)
+		//membuat route khusus menangani article, -> ke home, post article, get article
+		articles := v1.Group("/articles")
+		{
+			//set handler
+			articles.GET("/", getHome)
+			articles.GET("/:title", getArticle)
+			articles.POST("/", postArticle)
+		}
 	}
 
 	//menjalakan server
