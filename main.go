@@ -16,17 +16,22 @@ type Article struct {
 	Desc  string `sql:"type:text"`
 }
 
+//deklarasi variable global tipe *gorm.DB
+var DB *gorm.DB
+
 func main() {
+	//deklarasi variable err tipe error
+	var err error
 	//set koneksi database
-	db, err := gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/learngin?charset=utf8mb4&parseTime=True&loc=Local")
+	DB, err = gorm.Open("mysql", "root:root@tcp(127.0.0.1:3306)/learngin?charset=utf8mb4&parseTime=True&loc=Local")
 	//cek jika ada error
 	if err != nil {
 		panic("failed to connect database")
 	}
-	defer db.Close()
+	defer DB.Close()
 
 	//memigrasi cetakan Article sebagai tabel di database
-	db.AutoMigrate(&Article{})
+	DB.AutoMigrate(&Article{})
 
 	//set default route
 	router := gin.Default()
@@ -56,10 +61,14 @@ func main() {
 //set fungsi getHome() untuk route "/"
 //gin.Context = membawa detail permintaan, memvalidasi dan membuat serialisasi data json
 func getHome(c *gin.Context) {
+	//mengambil data dengan mengakses model
+	items := []Article{}
+	//ambil data dari table articles, kemudian simpan ke dalam variable items
+	DB.Find(&items) /// SELECT * FROM articles
 	//gin.H = set response
 	c.JSON(200, gin.H{
-		"status":  "Berhasil",
-		"message": "Berhasil akses home",
+		"status": "Berhasil ke halaman home",
+		"data":   items,
 	})
 }
 
