@@ -19,7 +19,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a // indirect
 	golang.org/x/sys v0.0.0-20220405210540-1e041c57c461 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
-	gopkg.in/danilopolani/gocialite.v1 v1.0.2 // indirect
+	gopkg.in/danilopolani/gocialite.v1 v1.0.2
 	gopkg.in/oleiade/reflections.v1 v1.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

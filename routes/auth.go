@@ -30,7 +30,7 @@ func RedirectHandler(c *gin.Context) {
 	}
 
 	providerScopes := map[string][]string{
-		"github": []string{"public_repo"},
+		"github": []string{},
 		"google": []string{},
 	}
 

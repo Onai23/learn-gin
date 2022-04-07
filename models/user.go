@@ -7,7 +7,7 @@ import "github.com/jinzhu/gorm"
 //deklarasi cetakan User, user dapat memiliki lebih dari 1 article
 type User struct {
 	gorm.Model
-	Articles []Article
+	Articles []Article //1 user dapat memiliki lebih dari 1 article
 	Username string
 	FullName string
 	Email    string

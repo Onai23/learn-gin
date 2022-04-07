@@ -20,7 +20,11 @@ func InitDB() {
 		panic("failed to connect database")
 	}
 
+	//memigrasi cetakan User sebagai tabel di database
+	DB.AutoMigrate(&models.User{})
 	//memigrasi cetakan Article sebagai tabel di database
-	DB.AutoMigrate(&models.Article{})
+	DB.AutoMigrate(&models.Article{}).AddForeignKey("user_id", "users(id)", "CASCADE", "CASCADE")
+	//migrasi relasi one to many user dengan article
+	DB.Model(&models.User{}).Related(&models.Article{})
 
 }
