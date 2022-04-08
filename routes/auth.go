@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"fmt"
+	"github.com/danilopolani/gocialite/structs"
 	"learn-gin/config"
+	"learn-gin/models"
 	"net/http"
 	"os"
 
@@ -69,11 +70,43 @@ func CallbackHandler(c *gin.Context) {
 		return
 	}
 
+	//jika user belum terdaftar, tambahkan ke dalam database
+	var newUser = getOrRegisterUser(provider, user)
+
+	c.JSON(200, gin.H{
+		"data":    newUser,
+		"token":   token,
+		"message": "berhasil login",
+	})
+
 	// Print in terminal user information
-	fmt.Printf("%#v", token)
-	fmt.Printf("%#v", user)
-	fmt.Printf("%#v", provider)
+	//fmt.Printf("%#v", token)
+	//fmt.Printf("%#v", user)
+	//fmt.Printf("%#v", provider)
 
 	// If no errors, show provider name
-	c.Writer.Write([]byte("Hi, " + user.FullName))
+	//c.Writer.Write([]byte("Hi, " + user.FullName))
+}
+
+//set fungsigetOrRegisterUser() -> mengembalikan objek data user
+//fungsi cek apakah user sudah terdaftar atau belum
+func getOrRegisterUser(provider string, user *structs.User) models.User {
+	//set objek cetakan user
+	var userData models.User
+	config.DB.Where("provider = ? AND social_id = ?", provider, user.ID).First(&userData)
+
+	//jika data tidak ada, create user baru
+	if userData.ID == 0 {
+		newUser := models.User{
+			FullName: user.FullName,
+			Email:    user.Email,
+			SocialId: user.ID,
+			Provider: provider,
+			Avatar:   user.Avatar,
+		}
+		config.DB.Create(&newUser)
+		return newUser
+	} else {
+		return userData
+	}
 }
