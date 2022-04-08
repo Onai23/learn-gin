@@ -1,14 +1,18 @@
 package routes
 
 import (
+	"fmt"
 	"github.com/danilopolani/gocialite/structs"
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"learn-gin/config"
 	"learn-gin/models"
 	"net/http"
 	"os"
-
-	"github.com/gin-gonic/gin"
+	"time"
 )
+
+var JWT_SECRET = "SUPER_SECRET"
 
 // Redirect to correct oAuth URL
 func RedirectHandler(c *gin.Context) {
@@ -64,7 +68,7 @@ func CallbackHandler(c *gin.Context) {
 	provider := c.Param("provider")
 
 	// Handle callback and check for errors
-	user, token, err := config.Gocial.Handle(state, code)
+	user, _, err := config.Gocial.Handle(state, code)
 	if err != nil {
 		c.Writer.Write([]byte("Error: " + err.Error()))
 		return
@@ -72,10 +76,11 @@ func CallbackHandler(c *gin.Context) {
 
 	//jika user belum terdaftar, tambahkan ke dalam database
 	var newUser = getOrRegisterUser(provider, user)
-
+	//membuat token
+	var jwtToken = createToken(&newUser)
 	c.JSON(200, gin.H{
 		"data":    newUser,
-		"token":   token,
+		"token":   jwtToken,
 		"message": "berhasil login",
 	})
 
@@ -109,4 +114,32 @@ func getOrRegisterUser(provider string, user *structs.User) models.User {
 	} else {
 		return userData
 	}
+}
+
+//set fungsi createToken()
+func createToken(user *models.User) string {
+	// Create a new token object, specifying signing method and the claims
+	// you would like it to contain.
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id":   user.ID,
+		"user_role": user.Role,
+		"exp":       time.Now().AddDate(0, 0, 7).Unix(),
+	})
+
+	// Sign and get the complete encoded token as a string using the secret
+	tokenString, err := jwtToken.SignedString([]byte(JWT_SECRET))
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return tokenString
+
+}
+
+//fungsi CheckTOken
+func CheckToken(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"msg": "Success Login",
+	})
 }

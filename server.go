@@ -5,6 +5,7 @@ import (
 	_ "github.com/gin-gonic/gin"
 	"github.com/subosito/gotenv"
 	"learn-gin/config"
+	"learn-gin/middleware"
 	"learn-gin/routes"
 )
 
@@ -21,6 +22,9 @@ func main() {
 		//menambahkan path parameter /auth/:provider
 		v1.GET("auth/:provider", routes.RedirectHandler)
 		v1.GET("/auth/:provider/callback", routes.CallbackHandler)
+
+		//testing token
+		v1.GET("/check", middleware.IsAuth(), routes.CheckToken)
 
 		//membuat route khusus menangani article, -> ke home, post article, get article
 		articles := v1.Group("/articles")
